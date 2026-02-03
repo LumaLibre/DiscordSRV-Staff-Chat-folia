@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package com.rezzedup.discordsrv.staffchat.listeners;
 import com.rezzedup.discordsrv.staffchat.StaffChatPlugin;
 import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent;
+import org.bukkit.Bukkit;
 
 @SuppressWarnings("unused")
 public class DiscordStaffChatListener {
@@ -40,7 +41,7 @@ public class DiscordStaffChatListener {
 			event.setCancelled(true); // Cancel this message from getting sent to global chat.
 			
 			// Handle this on the main thread next tick.
-			plugin.sync().run(() -> plugin.submitMessageFromDiscord(event.getAuthor(), event.getMessage()));
+			Bukkit.getGlobalRegionScheduler().run(plugin, task -> plugin.submitMessageFromDiscord(event.getAuthor(), event.getMessage()));
 		}
 	}
 }

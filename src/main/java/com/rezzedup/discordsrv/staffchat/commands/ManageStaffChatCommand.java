@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -141,11 +141,11 @@ public class ManageStaffChatCommand implements CommandExecutor, TabCompleter {
 			plugin.debugger().schedulePluginStatus(getClass(), "Debug Toggle");
 			sender.sendMessage(colorful("&9[Debug] &2→ &aEnabled debugging"));
 			
-			if (sender instanceof Player) {
+			if (sender instanceof Player player) {
 				sender.sendMessage(colorful("&9[Debug]&o Sending a test message..."));
-				plugin.sync().delay(10).ticks().run(() ->
-					plugin.getServer().dispatchCommand(sender, "staffchat Hello! Just testing things...")
-				);
+				player.getScheduler().runDelayed(plugin, task -> {
+					plugin.getServer().dispatchCommand(sender, "staffchat Hello! Just testing things...");
+				}, null, 10L);
 			}
 		} else {
 			sender.sendMessage(colorful("&9[Debug] &4→ &cDisabled debugging"));

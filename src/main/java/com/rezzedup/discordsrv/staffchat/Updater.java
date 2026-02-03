@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rezzedup.discordsrv.staffchat.config.StaffChatConfig;
 import community.leaf.tasks.TaskContext;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -39,6 +41,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class Updater {
 	public static final String RESOURCE_PAGE = "https://www.spigotmc.org/resources/44245/";
@@ -49,7 +52,7 @@ public class Updater {
 	private final HttpClient client;
 	private final String userAgent;
 	
-	private @NullOr TaskContext<BukkitTask> task;
+	private @NullOr ScheduledTask task;
 	private @NullOr Version latestAvailableVersion;
 	
 	Updater(StaffChatPlugin plugin) {
@@ -91,7 +94,7 @@ public class Updater {
 		if (plugin.config().getOrDefault(StaffChatConfig.UPDATE_CHECKER_ENABLED)) {
 			if (task == null || task.isCancelled()) {
 				plugin.debug(getClass()).log("Reload", () -> "Update checker enabled: starting task");
-				this.task = plugin.async().delay(10).ticks().every(7).hours().run(this::checkForUpdates);
+				this.task = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> checkForUpdates(), 0, 7, TimeUnit.HOURS);
 			} else {
 				plugin.debug(getClass()).log("Reload", () -> "Update checker enabled: task already running");
 			}
@@ -129,8 +132,8 @@ public class Updater {
 			plugin.debug(getClass()).log("Update Check: Success", () ->
 				"Found latest available version: " + latestAvailableVersion + " (current: " + plugin.version() + ")"
 			);
-			
-			plugin.sync().run(() -> notifyIfUpdateAvailable(plugin.getServer().getConsoleSender()));
+
+			Bukkit.getAsyncScheduler().runNow(plugin, task -> notifyIfUpdateAvailable(plugin.getServer().getConsoleSender()));
 		} catch (Exception e) {
 			plugin.debug(getClass()).logException("Update Check: Failure", e);
 		}

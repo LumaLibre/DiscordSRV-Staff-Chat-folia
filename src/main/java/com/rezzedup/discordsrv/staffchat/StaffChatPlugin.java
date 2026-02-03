@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,6 +45,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -56,6 +57,7 @@ import pl.tlinkowski.annotation.basic.NullOr;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class StaffChatPlugin extends JavaPlugin implements BukkitTaskSource, BukkitEventSource, StaffChatAPI {
 	// https://bstats.org/plugin/bukkit/DiscordSRV-Staff-Chat/11056
@@ -332,19 +334,18 @@ public class StaffChatPlugin extends JavaPlugin implements BukkitTaskSource, Buk
 		debug(getClass()).log("Metrics", () -> "Scheduling metrics to start one minute from now");
 		
 		// Start a minute later to get the most accurate data.
-		sync().delay(1).minutes().run(() ->
-		{
+		Bukkit.getAsyncScheduler().runDelayed(this, task -> {
 			Metrics metrics = new Metrics(this, BSTATS);
-			
+
 			metrics.addCustomChart(new SimplePie(
-				"hooked_into_discordsrv", () -> String.valueOf(isDiscordSrvHookEnabled())
+					"hooked_into_discordsrv", () -> String.valueOf(isDiscordSrvHookEnabled())
 			));
-			
+
 			metrics.addCustomChart(new SimplePie(
-				"has_valid_staff-chat_channel", () -> String.valueOf(getDiscordChannelOrNull() != null)
+					"has_valid_staff-chat_channel", () -> String.valueOf(getDiscordChannelOrNull() != null)
 			));
-			
+
 			debug(getClass()).log("Metrics", () -> "Started bStats metrics");
-		});
+		}, 1L, TimeUnit.MINUTES);
 	}
 }

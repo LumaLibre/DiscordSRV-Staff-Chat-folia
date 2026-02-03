@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ package com.rezzedup.discordsrv.staffchat;
 
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Message;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -117,10 +118,10 @@ public class Debugger {
 		}
 		
 		// Log status directly on the next tick.
-		plugin.sync().run(() -> logPluginStatus(clazz, context + " (Initial)"));
+		Bukkit.getGlobalRegionScheduler().run(plugin, task -> logPluginStatus(clazz, context + " (Initial)"));
 		
 		// Log status 30 seconds after so that DiscordSRV has a chance to connect.
-		plugin.sync().delay(30).seconds().run(() -> logPluginStatus(clazz, context + " (30 Seconds)"));
+		Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> logPluginStatus(clazz, context + " (30 Seconds)"), 600L);
 	}
 	
 	private void logPluginStatus(Class<?> clazz, String context) {

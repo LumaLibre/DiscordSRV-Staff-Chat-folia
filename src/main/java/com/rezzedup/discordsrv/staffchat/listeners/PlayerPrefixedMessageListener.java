@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import community.leaf.eventful.bukkit.CancellationPolicy;
 import community.leaf.eventful.bukkit.ListenerOrder;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -109,6 +110,6 @@ public class PlayerPrefixedMessageListener implements Listener {
 		);
 		
 		// Handle this on the main thread next tick.
-		plugin.sync().run(() -> plugin.submitMessageFromPlayer(player, submission));
+		Bukkit.getGlobalRegionScheduler().run(plugin, task -> plugin.submitMessageFromPlayer(player, submission));
 	}
 }

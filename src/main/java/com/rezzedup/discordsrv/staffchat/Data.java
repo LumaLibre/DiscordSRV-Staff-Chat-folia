@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,8 @@ import community.leaf.configvalues.bukkit.YamlValue;
 import community.leaf.configvalues.bukkit.data.YamlDataFile;
 import community.leaf.configvalues.bukkit.util.Sections;
 import community.leaf.tasks.TaskContext;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -39,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class Data extends YamlDataFile implements StaffChatData {
 	private static final String PROFILES_PATH = "staff-chat.profiles";
@@ -47,7 +50,7 @@ public class Data extends YamlDataFile implements StaffChatData {
 	
 	private final StaffChatPlugin plugin;
 	
-	private @NullOr TaskContext<BukkitTask> task = null;
+	private @NullOr ScheduledTask task = null;
 	
 	Data(StaffChatPlugin plugin) {
 		super(plugin.directory().resolve("data"), "staff-chat.data.yml");
@@ -67,11 +70,11 @@ public class Data extends YamlDataFile implements StaffChatData {
 		}
 		
 		// Start the save task.
-		task = plugin.async().every(2).minutes().run(() -> {
+		task = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> {
 			if (isUpdated()) {
 				save();
 			}
-		});
+		}, 0L, 2L, TimeUnit.MINUTES);
 		
 		// Update profiles of all online players when reloaded.
 		reloadsWith(() -> plugin.getServer().getOnlinePlayers().forEach(this::updateProfile));

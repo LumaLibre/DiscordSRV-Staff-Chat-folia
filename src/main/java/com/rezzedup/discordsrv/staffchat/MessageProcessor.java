@@ -1,6 +1,6 @@
 /*
  * The MIT License
- * Copyright © 2017-2024 RezzedUp and Contributors
+ * Copyright © 2017-2026 RezzedUp and Contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
 import github.scarsz.discordsrv.util.DiscordUtil;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import pl.tlinkowski.annotation.basic.NullOr;
 
@@ -167,9 +168,9 @@ public class MessageProcessor {
 		if (plugin.isDiscordSrvHookEnabled()) {
 			sendToDiscord(channel -> {
 				// Send to discord off the main thread (just like DiscordSRV does)
-				plugin.async().run(() ->
-					DiscordSRV.getPlugin().processChatMessage(author, message, StaffChatPlugin.CHANNEL, false)
-				);
+				Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+					DiscordSRV.getPlugin().processChatMessage(author, message, StaffChatPlugin.CHANNEL, false);
+				});
 			});
 		} else {
 			plugin.debug(getClass()).log(ChatService.MINECRAFT, "Message", () ->
