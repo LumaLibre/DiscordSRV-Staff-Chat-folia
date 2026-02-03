@@ -9,6 +9,7 @@ main: com.rezzedup.discordsrv.staffchat.StaffChatPlugin
 api-version: 1.13
 load: POSTWORLD
 softdepend: [ DiscordSRV, PlaceholderAPI ]
+folia-supported: true
 
 commands:
   staffchat:
