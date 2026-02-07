@@ -1,3 +1,5 @@
 before_install:
-  - sdk install java 21-open
-  - sdk use java 21-open
+  - sdk update
+  - sdk install java 21.0.4-tem
+  - sdk use java 21.0.4-tem
+  - java -version
