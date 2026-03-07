@@ -28,25 +28,23 @@ import com.rezzedup.discordsrv.staffchat.events.ReceivingStaffChatToggleEvent;
 import community.leaf.configvalues.bukkit.YamlValue;
 import community.leaf.configvalues.bukkit.data.YamlDataFile;
 import community.leaf.configvalues.bukkit.util.Sections;
-import community.leaf.tasks.TaskContext;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Data extends YamlDataFile implements StaffChatData {
 	private static final String PROFILES_PATH = "staff-chat.profiles";
 	
-	private final Map<UUID, Profile> profilesByUuid = new HashMap<>();
+	private final Map<UUID, Profile> profilesByUuid = new ConcurrentHashMap<>();
 	
 	private final StaffChatPlugin plugin;
 	
